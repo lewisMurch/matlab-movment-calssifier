@@ -1,0 +1,36 @@
+clc
+clf
+file = uigetfile;
+T = load(file)
+mag = sum(T.Acceleration.Z + T.Acceleration.Y + T.Acceleration.X, 2);
+threshold = 18;
+[pks, locs] = findpeaks(mag, 'MinPeakHeight', 1);
+[h_pks, h_locs] = findpeaks(mag, 'MinPeakHeight', threshold);
+hold on
+xlabel('Time');
+ylabel('Acceleration (m/s^2)');
+plot(mag);
+plot(locs, pks, 'r.')
+plot(h_locs, h_pks, 'g.')
+hold off
+peaks_ps = length(pks)/length(mag)*60;
+h_peaks_ps = length(h_pks)/length(mag)*60;
+final_action = "Unknown";
+ if peaks_ps > 4 
+     if h_peaks_ps >= 0 && h_peaks_ps < 1
+        final_action = "walking up the stairs" ;
+        
+     elseif h_peaks_ps > 1
+        final_action = "running" ;
+        
+     end
+     
+ elseif peaks_ps < 4 && peaks_ps > 1
+     final_action = "walking";
+     
+ elseif peaks_ps < 1
+     final_action = "standing";
+     
+ end
+ h = msgbox('You chose ' + final_action);
+ 
